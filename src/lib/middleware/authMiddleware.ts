@@ -12,7 +12,7 @@ export const authMiddleware: MiddlewareFunction = async (
   const user = token ? await verifyToken(token) : null
 
   // Public pages that do not require authentication
-  const publicPaths = ['/login', '/register']
+  const publicPaths = ['/signin', '/signup']
   const isPublicPath = publicPaths.includes(request.nextUrl.pathname)
 
   // Public API routes
@@ -21,12 +21,16 @@ export const authMiddleware: MiddlewareFunction = async (
   // If the user is not logged in and tries to access a protected page
   if (!user && !isPublicPath && !isApiAuth) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/signin'
     return NextResponse.redirect(url)
   }
 
-  // If the user is logged in and tries to access the login page
-  if (user && request.nextUrl.pathname === '/login') {
+  // If the user is logged in and tries to access the auth pages
+  if (
+    user &&
+    (request.nextUrl.pathname === '/signin' ||
+      request.nextUrl.pathname === '/signup')
+  ) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
